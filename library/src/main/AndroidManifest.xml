@@ -5,6 +5,13 @@
       android:allowBackup="true"
       android:supportsRtl="true"
       >
+
+
+    <activity android:name="com.wingsofts.dragphotoview.DragPhotoViewPagerActivity"
+        android:theme="@style/translucent"/>
+
+    <activity android:name="com.wingsofts.dragphotoview.PhotoViewPagerActivity"
+        android:theme="@style/translucent"/>
   </application>
 
 </manifest>

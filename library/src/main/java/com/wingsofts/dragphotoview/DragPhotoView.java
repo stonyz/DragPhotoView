@@ -2,14 +2,13 @@ package com.wingsofts.dragphotoview;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 import uk.co.senab.photoview.PhotoView;
 
@@ -18,30 +17,36 @@ import uk.co.senab.photoview.PhotoView;
  */
 
 public class DragPhotoView extends PhotoView {
+    private final static int MAX_MOVE_Y = 500;
+
+    private final static long AMINATION_DURATION = 300;
+
     private Paint mPaint;
-
-    // downX
-    private float mDownX;
-    // down Y
-    private float mDownY;
-
-    private float mTranslateY;
-    private float mTranslateX;
-    private float mScale = 1;
     private int mWidth;
     private int mHeight;
-    private float mMinScale = 0.5f;
     private int mAlpha = 255;
-    private final static int MAX_TRANSLATE_Y = 500;
+    private float mDownX;
+    private float mDownY;
+    private float mTouchX;
+    private float mTouchY;
+    private float mScale = 1f;
+    private float mMinScale = 0.45f;
+    private float mMoveY;
+    private float mMoveX;
+    private boolean isEnd = false;
+    private boolean isLongTouch = false;
+    private boolean isInterceptTouch = false;
+    private OnTapClickListener mTapListener;
+    private OnPreViewFinishedListener mFinishedListener;
 
-    private final static long DURATION = 300;
-    private boolean canFinish = false;
-    private boolean isAnimate = false;
 
-    //is event on PhotoView
-    private boolean isTouchEvent = false;
-    private OnTapListener mTapListener;
-    private OnExitListener mExitListener;
+    public interface OnTapClickListener {
+        void onTap(DragPhotoView view);
+    }
+
+    public interface OnPreViewFinishedListener {
+        void onFinish(DragPhotoView view, float x, float y, float w, float h);
+    }
 
     public DragPhotoView(Context context) {
         this(context, null);
@@ -61,115 +66,127 @@ public class DragPhotoView extends PhotoView {
     protected void onDraw(Canvas canvas) {
         mPaint.setAlpha(mAlpha);
         canvas.drawRect(0, 0, mWidth, mHeight, mPaint);
-        canvas.translate(mTranslateX, mTranslateY);
+        canvas.translate(mMoveX, mMoveY);
         canvas.scale(mScale, mScale, mWidth / 2, mHeight / 2);
         super.onDraw(canvas);
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        super.onSizeChanged(w, h, oldW, oldH);
         mWidth = w;
         mHeight = h;
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        //only scale == 1 can drag
-        if (getScale() == 1) {
+    public void setOnLongClickListener(final OnLongClickListener l) {
+        OnLongClickListener longClickListener = new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                isLongTouch = true;
+                if (l != null) {
+                    return l.onLongClick(v);
+                }
+                return false;
+            }
+        };
+        super.setOnLongClickListener(longClickListener);
+    }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        if (getScale() == 1) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    onActionDown(event);
-
-                    //change the canFinish flag
-                    canFinish = !canFinish;
-
+                    isEnd = !isEnd;
+                    mDownX = event.getX();
+                    mDownY = event.getY();
+                    mTouchX = x;
+                    mTouchY = y;
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    float deltaX = x - mTouchX;
+                    float deltaY = y - mTouchY;
+                    float absDeltaX = Math.abs(deltaX);
+                    float absDeltaY = Math.abs(deltaY);
 
-                    //in viewpager
-                    if (mTranslateY == 0 && mTranslateX != 0) {
+                    //viewpager中横向
+                    if (mScale >= 1 && (absDeltaX >= absDeltaY)) {
+                        return super.dispatchTouchEvent(event);
+                    }
 
-                        //如果不消费事件，则不作操作
-                        if (!isTouchEvent) {
+                    if (mMoveY == 0 && mMoveX != 0) {
+                        if (!isInterceptTouch) {
                             mScale = 1;
                             return super.dispatchTouchEvent(event);
                         }
                     }
 
-                    //single finger drag  down
-                    if (mTranslateY >= 0 && event.getPointerCount() == 1) {
-                        onActionMove(event);
-
-                        //如果有上下位移 则不交给viewpager
-                        if (mTranslateY != 0) {
-                            isTouchEvent = true;
+                    if (mMoveY >= 0 && event.getPointerCount() == 1) {
+                        resolveMove(event);
+                        if (mMoveY != 0) {
+                            isInterceptTouch = true;
                         }
                         return true;
                     }
 
-
-                    //防止下拉的时候双手缩放
-                    if (mTranslateY >= 0 && mScale < 0.95) {
+                    if (mMoveY >= 0 && mScale < 0.97) {
                         return true;
                     }
                     break;
-
-                case MotionEvent.ACTION_UP:
-                    //防止下拉的时候双手缩放
-                    if (event.getPointerCount() == 1) {
-                        onActionUp(event);
-                        isTouchEvent = false;
-                        //judge finish or not
-                        postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mTranslateX == 0 && mTranslateY == 0 && canFinish) {
-
-                                    if (mTapListener != null) {
-                                        mTapListener.onTap(DragPhotoView.this);
-                                    }
-                                }
-                                canFinish = false;
-                            }
-                        }, 300);
+                case MotionEvent.ACTION_CANCEL:
+                    if (mScale == 1 && (mMoveX != 0 || mMoveY != 0)) {
+                        doAnimation();
                     }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (event.getPointerCount() == 1) {
+                        if (mScale < 1) {
+                            if (mMoveY > MAX_MOVE_Y) {
+                                if (mFinishedListener != null) {
+                                    mFinishedListener.onFinish(this, mMoveX, mMoveY, mWidth, mHeight);
+                                }
+                            } else {
+                                doAnimation();
+                            }
+                        } else {
+                            if (!isLongTouch) {
+                                postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (mMoveX == 0 && mMoveY == 0 && isEnd) {
+                                            if (mTapListener != null) {
+                                                mTapListener.onTap(DragPhotoView.this);
+                                            }
+                                        }
+                                        isEnd = false;
+                                    }
+                                }, 350);
+                            } else if (mScale == 1 && (mMoveX != 0 || mMoveY != 0)) {
+                                doAnimation();
+                            }
+                        }
+                    }
+                    isInterceptTouch = false;
+                    isLongTouch = false;
             }
         }
-
         return super.dispatchTouchEvent(event);
     }
 
-    private void onActionUp(MotionEvent event) {
-
-        if (mTranslateY > MAX_TRANSLATE_Y) {
-            if (mExitListener != null) {
-                mExitListener.onExit(this, mTranslateX, mTranslateY, mWidth, mHeight);
-            } else {
-                throw new RuntimeException("DragPhotoView: onExitLister can't be null ! call setOnExitListener() ");
-            }
-        } else {
-            performAnimation();
-        }
-    }
-
-    private void onActionMove(MotionEvent event) {
+    private void resolveMove(MotionEvent event) {
         float moveY = event.getY();
         float moveX = event.getX();
-        mTranslateX = moveX - mDownX;
-        mTranslateY = moveY - mDownY;
-
-        //保证上划到到顶还可以继续滑动
-        if (mTranslateY < 0) {
-            mTranslateY = 0;
+        mMoveX = moveX - mDownX;
+        mMoveY = moveY - mDownY;
+        if (mMoveY < 0) {
+            mMoveY = 0;
         }
-
-        float percent = mTranslateY / MAX_TRANSLATE_Y;
+        float percent = mMoveY / MAX_MOVE_Y;
         if (mScale >= mMinScale && mScale <= 1f) {
             mScale = 1 - percent;
-
             mAlpha = (int) (255 * (1 - percent));
             if (mAlpha > 255) {
                 mAlpha = 255;
@@ -182,59 +199,58 @@ public class DragPhotoView extends PhotoView {
         } else if (mScale > 1f) {
             mScale = 1;
         }
-
         invalidate();
     }
 
-    private void performAnimation() {
-        getScaleAnimation().start();
-        getTranslateXAnimation().start();
-        getTranslateYAnimation().start();
-        getAlphaAnimation().start();
+
+    private void doAnimation() {
+        doScaleAnimation().start();
+        doTranslateXAnimation().start();
+        doTranslateYAnimation().start();
+        doAlphaAnimation().start();
     }
 
-    private ValueAnimator getAlphaAnimation() {
+    private ValueAnimator doAlphaAnimation() {
         final ValueAnimator animator = ValueAnimator.ofInt(mAlpha, 255);
-        animator.setDuration(DURATION);
+        animator.setDuration(AMINATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 mAlpha = (int) valueAnimator.getAnimatedValue();
             }
         });
-
         return animator;
     }
 
-    private ValueAnimator getTranslateYAnimation() {
-        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, 0);
-        animator.setDuration(DURATION);
+    private ValueAnimator doTranslateYAnimation() {
+        final ValueAnimator animator = ValueAnimator.ofFloat(mMoveY, 0);
+        animator.setDuration(AMINATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mTranslateY = (float) valueAnimator.getAnimatedValue();
+                mMoveY = (float) valueAnimator.getAnimatedValue();
             }
         });
 
         return animator;
     }
 
-    private ValueAnimator getTranslateXAnimation() {
-        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateX, 0);
-        animator.setDuration(DURATION);
+    private ValueAnimator doTranslateXAnimation() {
+        final ValueAnimator animator = ValueAnimator.ofFloat(mMoveX, 0);
+        animator.setDuration(AMINATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mTranslateX = (float) valueAnimator.getAnimatedValue();
+                mMoveX = (float) valueAnimator.getAnimatedValue();
             }
         });
 
         return animator;
     }
 
-    private ValueAnimator getScaleAnimation() {
+    private ValueAnimator doScaleAnimation() {
         final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
-        animator.setDuration(DURATION);
+        animator.setDuration(AMINATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -246,12 +262,10 @@ public class DragPhotoView extends PhotoView {
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                isAnimate = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                isAnimate = false;
                 animator.removeAllListeners();
             }
 
@@ -268,38 +282,26 @@ public class DragPhotoView extends PhotoView {
         return animator;
     }
 
-    private void onActionDown(MotionEvent event) {
-        mDownX = event.getX();
-        mDownY = event.getY();
-    }
-
-    public float getMinScale() {
-        return mMinScale;
-    }
-
     public void setMinScale(float minScale) {
         mMinScale = minScale;
     }
 
-    public void setOnTapListener(OnTapListener listener) {
+    public void setOnTapListener(OnTapClickListener listener) {
         mTapListener = listener;
     }
 
-    public void setOnExitListener(OnExitListener listener) {
-        mExitListener = listener;
+    public void OnPreViewFinishedListener(OnPreViewFinishedListener listener) {
+        mFinishedListener = listener;
     }
 
-    public interface OnTapListener {
-        void onTap(DragPhotoView view);
-    }
-
-    public interface OnExitListener {
-        void onExit(DragPhotoView view, float translateX, float translateY, float w, float h);
+    public float getImageScale() {
+        return mScale;
     }
 
     public void finishAnimationCallBack() {
-        mTranslateX = -mWidth / 2 + mWidth * mScale / 2;
-        mTranslateY = -mHeight / 2 + mHeight * mScale / 2;
+        mMoveX = -mWidth / 2 + mWidth * mScale / 2;
+
+        mMoveY = -mHeight / 2 + mHeight * mScale / 2;
         invalidate();
     }
 }
