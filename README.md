@@ -1,77 +1,38 @@
-# DragPhotoView([English](https://github.com/githubwing/DragPhotoView/blob/master/README_EN.md))
+# DragPhotoView 高仿微信可拖拽返回PhotoView
 
-[![](https://jitpack.io/v/githubwing/DragPhotoView.svg)](https://jitpack.io/#githubwing/DragPhotoView)
+forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView),进行二次调整与优化
 
-高仿微信可拖拽返回PhotoView
+## 一、介绍
 
+目前已经优化部分
 
-### 基于 [PhotoView](https://github.com/chrisbanes/PhotoView)
+* 共享动画效果（后续继续优化）
+* 触摸，拖动，长按，滑动复原等问题优化
+* 集成ViewPager模式，支持拖拽与不拖拽，方便直接调用大图查看
 
-##[下载APK体验](https://github.com/githubwing/DragPhotoView/raw/master/app-debug.apk)
+（后面再更新演示图）
+![](https://github.com/githubwing/DragPhotoView/raw/master/img/img.gif)
 
-## 特性
-- 拖拽缩放图片,并且结束Activity
-- 其他PhotoView所有特性如下:
+## 二、依赖
 
->- Out of the box zooming, using multi-touch and double-tap.
->- Scrolling, with smooth scrolling fling.
->- Works perfectly when used in a scrolling parent (such as ViewPager).
->- Allows the application to be notified when the displayed Matrix has changed. Useful for when you need to update your UI based on the >current zoom/scroll position.
->- Allows the application to be notified when the user taps on the Photo.
-
-![image](https://github.com/githubwing/DragPhotoView/raw/master/img/img.gif)
-
-
-
-# 使用
-
-修改你的  `build.gradle`文件
-
-```gradle
-
-//root project
+### 在你的项目project下的build.gradle添加
+```
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
-    
-//module project
-    	dependencies {
-	        compile 'com.github.githubwing:DragPhotoView:1.0.1'
-	}
-    
+}
+```
+### 在module下的build.gradle添加依赖
+
+```
+dependencies {
+    compile 'com.github.CarGuo:DragPhotoView:1.0.2'
+}
+
 ```
 
-使用法放和普通的ImageView一毛一样
-
-```java
-
-
-	// 所有ImageView用法都可以	
-	DragPhotoView photoView = (DragPhotoView)findViewById(R.id.photoView);
-	photoView.setImageResource(R.drawable.ram);
-	//必须添加一个onExitListener,在拖拽到底部时触发.	
-	photoView.setOnExitListener()
-	
-	photoView.setOnTapListener()
-```
-
-## 小贴士
-
-想要达到demo效果,需要把你的Activity背景改为透明
-
-修改`style.xml`
-```xml
-  <style name="translucent" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground" >@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-```
-全版本共享元素实现(包括Activity转跳和拖拽共享元素)在Demo里,如有需要,参照demo思路实现即可.
-
-## 欢迎Star ,欢迎加入我的Android酒馆 :425983695
 # License
 
     Copyright 2016 androidwing1992
