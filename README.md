@@ -1,6 +1,6 @@
 # DragPhotoView 高仿微信可拖拽返回PhotoView
 
-forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView),进行二次调整与优化
+forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView)，进行二次调整与优化
 
 ## 一、介绍
 
@@ -9,6 +9,8 @@ forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoVi
 * 共享动画效果（后续继续优化）
 * 触摸，拖动，长按，滑动复原等问题优化
 * 集成ViewPager模式，支持拖拽与不拖拽，方便直接调用大图查看
+
+------------------------------------------------------------------
 
 （后面再更新演示图）
 ![](https://github.com/githubwing/DragPhotoView/raw/master/img/img.gif)
