@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,11 +18,11 @@ import uk.co.senab.photoview.PhotoView;
  */
 
 public class DragPhotoView extends PhotoView {
+
     private final static int MAX_MOVE_Y = 500;
 
-    private final static long AMINATION_DURATION = 300;
+    private final static long ANIMATION_DURATION = 300;
 
-    private Paint mPaint;
     private int mWidth;
     private int mHeight;
     private int mAlpha = 255;
@@ -36,6 +37,7 @@ public class DragPhotoView extends PhotoView {
     private boolean isEnd = false;
     private boolean isLongTouch = false;
     private boolean isInterceptTouch = false;
+    private Paint mPaint;
     private OnTapClickListener mTapListener;
     private OnPreViewFinishedListener mFinishedListener;
 
@@ -212,7 +214,7 @@ public class DragPhotoView extends PhotoView {
 
     private ValueAnimator doAlphaAnimation() {
         final ValueAnimator animator = ValueAnimator.ofInt(mAlpha, 255);
-        animator.setDuration(AMINATION_DURATION);
+        animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -224,7 +226,7 @@ public class DragPhotoView extends PhotoView {
 
     private ValueAnimator doTranslateYAnimation() {
         final ValueAnimator animator = ValueAnimator.ofFloat(mMoveY, 0);
-        animator.setDuration(AMINATION_DURATION);
+        animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -237,7 +239,7 @@ public class DragPhotoView extends PhotoView {
 
     private ValueAnimator doTranslateXAnimation() {
         final ValueAnimator animator = ValueAnimator.ofFloat(mMoveX, 0);
-        animator.setDuration(AMINATION_DURATION);
+        animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -250,7 +252,7 @@ public class DragPhotoView extends PhotoView {
 
     private ValueAnimator doScaleAnimation() {
         final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
-        animator.setDuration(AMINATION_DURATION);
+        animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -293,6 +295,8 @@ public class DragPhotoView extends PhotoView {
     public void OnPreViewFinishedListener(OnPreViewFinishedListener listener) {
         mFinishedListener = listener;
     }
+
+
 
     public float getImageScale() {
         return mScale;

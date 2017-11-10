@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView3;
 
+    private ImageView mImageView4;
+
     private List<String> mDataList = new ArrayList<>();
 
     @Override
@@ -32,11 +34,13 @@ public class MainActivity extends AppCompatActivity {
         mImageView1 = (ImageView) findViewById(R.id.imageView1);
         mImageView2 = (ImageView) findViewById(R.id.imageView2);
         mImageView3 = (ImageView) findViewById(R.id.imageView3);
+        mImageView4 = (ImageView) findViewById(R.id.imageView4);
         onClick();
 
         mDataList.add("http://b.hiphotos.baidu.com/zhidao/pic/item/77c6a7efce1b9d16249b0023f5deb48f8c546410.jpg");
         mDataList.add("http://www.tumukeji.com/images/upload/imageArticle/1299182493.jpg");
         mDataList.add("http://dasouji.com/wp-content/uploads/2015/07/%E9%95%BF%E8%8A%B1%E5%9B%BE-1.jpg");
+        mDataList.add("http://osvlwlt4g.bkt.clouddn.com/17-11-10/17291576.jpg");
 
         RequestOptions requestOptions = new RequestOptions();
         Glide.with(getApplicationContext())
@@ -50,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(getApplicationContext())
                 .setDefaultRequestOptions(requestOptions)
                 .load(mDataList.get(2)).into(mImageView3);
+
+        Glide.with(getApplicationContext())
+                .setDefaultRequestOptions(requestOptions)
+                .load(mDataList.get(3)).into(mImageView4);
     }
 
     public void onClick() {
@@ -73,6 +81,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DragUtils.goToDragPhotoView(MainActivity.this, v, mDataList, 2,
+                        new ImageLoaderListener(), new LongClickImageListener(mDataList));
+            }
+        });
+
+        mImageView4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DragUtils.goToDragPhotoView(MainActivity.this, v, mDataList, 3,
                         new ImageLoaderListener(), new LongClickImageListener(mDataList));
             }
         });

@@ -139,15 +139,25 @@ public class DragPhotoViewPagerHelper {
         //根据图片的大小，计算比例，通过比例计算出图片的空白位置
         //比如横图，其实在显示中存在上下空白，所以需要计算出空白的的大小，得到顶部偏移量
         //在计算偏移量的缩放，得到实际偏移
+        //根据图片
+        int width = 0;
+        int height = 0;
+
         if (view.getDrawable() != null) {
-            //根据图片
-            int width = view.getDrawable().getBounds().width();
-            int height = view.getDrawable().getBounds().height();
+            width = view.getDrawable().getBounds().width();
+            height = view.getDrawable().getBounds().height();
             if (width > 0 && height > 0) {
-                //此处以横图充满的前提，计算出实际高度
-                float currentHeight = mTargetWidth * height / width;
-                //根据实际高度，计算出实际的空白缩放偏移
-                translateY -= ((mTargetHeight - currentHeight) / 2 * Math.max(mScaleX, mScaleY));
+                if (width > height) {
+                    //此处以横图充满的前提，计算出实际高度
+                    float currentHeight = mTargetWidth * height / width;
+                    //根据实际高度，计算出实际的空白缩放偏移
+                    translateY -= ((mTargetHeight - currentHeight) / 2 * Math.max(mScaleX, mScaleY));
+                } else {
+                    //此处以竖图充满的前提，计算出实际宽度
+                    float currentWidth = mTargetHeight * width / height;
+                    //根据实际宽度，计算出实际的空白缩放偏移
+                    translateX -= ((mTargetWidth - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
+                }
             } else {
                 listener.onAnimationEnd(null);
                 return;
