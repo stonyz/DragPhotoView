@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -32,11 +31,14 @@ public class DragPhotoView extends PhotoView {
     private float mTouchY;
     private float mScale = 1f;
     private float mMinScale = 0.45f;
+    private float mScaleNormalX = 1f, mScaleNormalY = 1f;
+    private float mOffsetEmptyMoveX = 0f, mOffsetEmptyMoveY = 0f;
     private float mMoveY;
     private float mMoveX;
     private boolean isEnd = false;
     private boolean isLongTouch = false;
     private boolean isInterceptTouch = false;
+    private boolean isEndToNormal = false;
     private Paint mPaint;
     private OnTapClickListener mTapListener;
     private OnPreViewFinishedListener mFinishedListener;
@@ -68,8 +70,16 @@ public class DragPhotoView extends PhotoView {
     protected void onDraw(Canvas canvas) {
         mPaint.setAlpha(mAlpha);
         canvas.drawRect(0, 0, mWidth, mHeight, mPaint);
-        canvas.translate(mMoveX, mMoveY);
-        canvas.scale(mScale, mScale, mWidth / 2, mHeight / 2);
+        if (isEndToNormal) {
+            //缩放恢复原本大小导致的xy位置，基于中心点
+            //根据图片当前的缩放比例，减去恢复到目标需要的比例算到偏差半径，再减去空白区偏移量,比如放大部分超过了原本的空白区
+            canvas.translate(mMoveX + (mWidth * (mScaleNormalX - mScale)) / 2 - mOffsetEmptyMoveX,
+                    (mMoveY + (mHeight * (mScaleNormalY - mScale)) / 2) - mOffsetEmptyMoveY);
+            canvas.scale(mScaleNormalX, mScaleNormalY, mWidth / 2, mHeight / 2);
+        } else {
+            canvas.translate(mMoveX, mMoveY);
+            canvas.scale(mScale, mScale, mWidth / 2, mHeight / 2);
+        }
         super.onDraw(canvas);
     }
 
@@ -296,7 +306,19 @@ public class DragPhotoView extends PhotoView {
         mFinishedListener = listener;
     }
 
+    public void setNormalScale(float x, float y) {
+        mScaleNormalX = x;
+        mScaleNormalY = y;
+    }
 
+    public void setEmptyOffsetMove(float x, float y) {
+        mOffsetEmptyMoveX = x;
+        mOffsetEmptyMoveY = y;
+    }
+
+    public void setEndToNormal(boolean endToNormal) {
+        isEndToNormal = endToNormal;
+    }
 
     public float getImageScale() {
         return mScale;

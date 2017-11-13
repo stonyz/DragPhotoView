@@ -23,6 +23,7 @@ public class DragPhotoViewPagerHelper {
     private float mScaleY;
     private float mTranslationX;
     private float mTranslationY;
+    private boolean isDragAnimationExit;
 
 
     public void initDragParams(Intent intent, DragPhotoView photo[], int position) {
@@ -124,8 +125,8 @@ public class DragPhotoViewPagerHelper {
                               final Animator.AnimatorListener listener) {
         view.finishAnimationCallBack();
         //计算photoView的x和y的动画起始位置，因为拖拽其实只是改变内部绘制图像，不改变xy
-        float viewX = mTargetWidth / 2 + x - mTargetWidth * Math.max(mScaleX, mScaleY) / 2;
-        float viewY = mTargetHeight / 2 + y - mTargetHeight * Math.max(mScaleX, mScaleY) / 2;
+        final float viewX = mTargetWidth / 2 + x - mTargetWidth * Math.max(mScaleX, mScaleY) / 2;
+        final float viewY = mTargetHeight / 2 + y - mTargetHeight * Math.max(mScaleX, mScaleY) / 2;
         view.setX(viewX);
         view.setY(viewY);
 
@@ -140,9 +141,14 @@ public class DragPhotoViewPagerHelper {
         //比如横图，其实在显示中存在上下空白，所以需要计算出空白的的大小，得到顶部偏移量
         //在计算偏移量的缩放，得到实际偏移
         //根据图片
-        int width = 0;
-        int height = 0;
+        int width;
+        int height;
 
+        float currentScaleWidth = mTargetWidth;
+        float currentScaleHeight = mTargetHeight;
+        float offsetEmpty;
+        final float scaleOffsetEmptyX;
+        final float scaleOffsetEmptyY;
         if (view.getDrawable() != null) {
             width = view.getDrawable().getBounds().width();
             height = view.getDrawable().getBounds().height();
@@ -151,12 +157,29 @@ public class DragPhotoViewPagerHelper {
                     //此处以横图充满的前提，计算出实际高度
                     float currentHeight = mTargetWidth * height / width;
                     //根据实际高度，计算出实际的空白缩放偏移
-                    translateY -= ((mTargetHeight - currentHeight) / 2 * Math.max(mScaleX, mScaleY));
-                } else {
+                    offsetEmpty = ((mTargetHeight - currentHeight) / 2 * Math.max(mScaleX, mScaleY));
+                    translateY -= offsetEmpty;
+                    currentScaleHeight = currentHeight;
+                    scaleOffsetEmptyX = 0;
+                    scaleOffsetEmptyY = offsetEmpty;
+                } else if (width < height){
                     //此处以竖图充满的前提，计算出实际宽度
                     float currentWidth = mTargetHeight * width / height;
+                    offsetEmpty = ((mTargetWidth - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
                     //根据实际宽度，计算出实际的空白缩放偏移
-                    translateX -= ((mTargetWidth - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
+                    translateX -= offsetEmpty;
+                    currentScaleWidth = currentWidth;
+                    scaleOffsetEmptyX = offsetEmpty;
+                    scaleOffsetEmptyY = 0;
+                } else {
+                    //如果为方形图片
+                    float currentWidth = mTargetWidth;
+                    offsetEmpty = ((mTargetHeight - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
+                    //根据实际宽度，计算出实际的空白缩放偏移
+                    translateY -= offsetEmpty;
+                    currentScaleHeight = currentWidth;
+                    scaleOffsetEmptyX = 0;
+                    scaleOffsetEmptyY = offsetEmpty;
                 }
             } else {
                 listener.onAnimationEnd(null);
@@ -166,6 +189,26 @@ public class DragPhotoViewPagerHelper {
             listener.onAnimationEnd(null);
             return;
         }
+
+        isDragAnimationExit = true;
+        //算出恢复到原本大小需要的比例
+        final float scaleTargetWidth = mOriginWidth / currentScaleWidth;
+        final float scaleTargetHeight = mOriginHeight / currentScaleHeight;
+        //算出恢复到原本大小，缩放过程中，自身大小变化是否在图片空白区域内
+        //如果变大部分超过了空白区域，需要计算偏差
+        final float tmpTargetViewHeight = mTargetHeight * scaleTargetHeight;
+        final float tmpTargetViewWidth = mTargetWidth * scaleTargetWidth;
+        final float offsetX = (tmpTargetViewWidth - mOriginWidth) / 2 - scaleOffsetEmptyX;
+        final float offsetY = (tmpTargetViewHeight - mOriginHeight) / 2 - scaleOffsetEmptyY;
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                view.setNormalScale(scaleTargetWidth, scaleTargetHeight);
+                view.setEmptyOffsetMove(offsetX, offsetY);
+                view.setEndToNormal(true);
+                view.invalidate();
+            }
+        }, 250);
 
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(view.getX(), view.getX() + translateX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -212,6 +255,7 @@ public class DragPhotoViewPagerHelper {
 
     public void exitLogic(DragPhotoView photo[], int position, final Animator.AnimatorListener listener) {
 
+        isDragAnimationExit = true;
         final DragPhotoView photoView = photo[position];
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -277,5 +321,8 @@ public class DragPhotoViewPagerHelper {
         scaleXAnimator.start();
     }
 
+    public boolean isDragAnimationExit() {
+        return isDragAnimationExit;
+    }
 
 }

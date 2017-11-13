@@ -96,10 +96,16 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
 
     @Override
     public void onBackPressed() {
+        if (mPagerHelper.isDragAnimationExit()) {
+            return;
+        }
         exitWithAnimation(mViewPager.getCurrentItem());
     }
 
     private void exitWithAnimation(int position) {
+        if (mPagerHelper.isDragAnimationExit()) {
+            return;
+        }
         if (position != mCurrImagePosition) {
             finishRightNow();
             return;
