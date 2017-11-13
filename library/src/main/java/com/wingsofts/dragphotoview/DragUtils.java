@@ -23,6 +23,7 @@ public class DragUtils {
     public static final String LONG_CLICK_LISTENER = "LONG_CLICK_LISTENER";
     public static final String IMAGE_LOAD_LISTENER = "IMAGE_LOAD_LISTENER";
     public static final  String FINISH_EXIT_FULLSCREEN = "FINISH_EXIT_FULLSCREEN";
+    public static final  String ANIMATION_TIME = "ANIMATION_TIME";
 
 
     public static void goToDragPhotoView(final Activity context, View imageView, final List<String> imageList, int currImageIndex,

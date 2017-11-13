@@ -17,6 +17,7 @@ public class DragPhotoViewPagerHelper {
     private int mOriginWidth;
     private int mOriginCenterX;
     private int mOriginCenterY;
+    private int mAnimationTime = 300;
     private float mTargetHeight;
     private float mTargetWidth;
     private float mScaleX;
@@ -34,6 +35,7 @@ public class DragPhotoViewPagerHelper {
         int originCenterX = originLeft + originWidth / 2;
         int originCenterY = originTop + originHeight / 2;
 
+        mAnimationTime = intent.getIntExtra(DragUtils.ANIMATION_TIME, 300);
         mOriginLeft = originLeft;
         mOriginTop = originTop;
         mOriginHeight = originHeight;
@@ -86,7 +88,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setX((Float) valueAnimator.getAnimatedValue());
             }
         });
-        translateXAnimator.setDuration(300);
+        translateXAnimator.setDuration(mAnimationTime);
         translateXAnimator.start();
 
         ValueAnimator translateYAnimator = ValueAnimator.ofFloat(photoView.getY(), 0);
@@ -96,7 +98,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setY((Float) valueAnimator.getAnimatedValue());
             }
         });
-        translateYAnimator.setDuration(300);
+        translateYAnimator.setDuration(mAnimationTime);
         translateYAnimator.start();
 
         ValueAnimator scaleYAnimator = ValueAnimator.ofFloat(mScaleY, 1);
@@ -106,7 +108,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setScaleY((Float) valueAnimator.getAnimatedValue());
             }
         });
-        scaleYAnimator.setDuration(300);
+        scaleYAnimator.setDuration(mAnimationTime);
         scaleYAnimator.start();
 
         ValueAnimator scaleXAnimator = ValueAnimator.ofFloat(mScaleX, 1);
@@ -116,7 +118,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setScaleX((Float) valueAnimator.getAnimatedValue());
             }
         });
-        scaleXAnimator.setDuration(300);
+        scaleXAnimator.setDuration(mAnimationTime);
         scaleXAnimator.start();
     }
 
@@ -208,7 +210,7 @@ public class DragPhotoViewPagerHelper {
                 view.setEndToNormal(true);
                 view.invalidate();
             }
-        }, 250);
+        }, mAnimationTime - 50);
 
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(view.getX(), view.getX() + translateX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -217,7 +219,7 @@ public class DragPhotoViewPagerHelper {
                 view.setX((Float) valueAnimator.getAnimatedValue());
             }
         });
-        translateXAnimator.setDuration(300);
+        translateXAnimator.setDuration(mAnimationTime);
         translateXAnimator.start();
         ValueAnimator translateYAnimator = ValueAnimator.ofFloat(view.getY(), view.getY() + translateY);
         translateYAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -248,7 +250,7 @@ public class DragPhotoViewPagerHelper {
 
             }
         });
-        translateYAnimator.setDuration(300);
+        translateYAnimator.setDuration(mAnimationTime);
         translateYAnimator.start();
 
     }
@@ -264,7 +266,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setX((Float) valueAnimator.getAnimatedValue());
             }
         });
-        translateXAnimator.setDuration(300);
+        translateXAnimator.setDuration(mAnimationTime);
         translateXAnimator.start();
 
         ValueAnimator translateYAnimator = ValueAnimator.ofFloat(0, mTranslationY);
@@ -274,7 +276,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setY((Float) valueAnimator.getAnimatedValue());
             }
         });
-        translateYAnimator.setDuration(300);
+        translateYAnimator.setDuration(mAnimationTime);
         translateYAnimator.start();
 
         ValueAnimator scaleYAnimator = ValueAnimator.ofFloat(1, mScaleY);
@@ -284,7 +286,7 @@ public class DragPhotoViewPagerHelper {
                 photoView.setScaleY((Float) valueAnimator.getAnimatedValue());
             }
         });
-        scaleYAnimator.setDuration(300);
+        scaleYAnimator.setDuration(mAnimationTime);
         scaleYAnimator.start();
 
         ValueAnimator scaleXAnimator = ValueAnimator.ofFloat(1, mScaleX);
@@ -317,7 +319,7 @@ public class DragPhotoViewPagerHelper {
 
             }
         });
-        scaleXAnimator.setDuration(300);
+        scaleXAnimator.setDuration(mAnimationTime);
         scaleXAnimator.start();
     }
 
