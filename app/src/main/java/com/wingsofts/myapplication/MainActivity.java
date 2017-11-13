@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView4;
 
+    private ImageView mImageView5;
+
     private List<String> mDataList = new ArrayList<>();
 
     @Override
@@ -35,12 +37,14 @@ public class MainActivity extends AppCompatActivity {
         mImageView2 = (ImageView) findViewById(R.id.imageView2);
         mImageView3 = (ImageView) findViewById(R.id.imageView3);
         mImageView4 = (ImageView) findViewById(R.id.imageView4);
+        mImageView5 = (ImageView) findViewById(R.id.imageView5);
         onClick();
 
         mDataList.add("http://b.hiphotos.baidu.com/zhidao/pic/item/77c6a7efce1b9d16249b0023f5deb48f8c546410.jpg");
         mDataList.add("http://www.tumukeji.com/images/upload/imageArticle/1299182493.jpg");
         mDataList.add("http://dasouji.com/wp-content/uploads/2015/07/%E9%95%BF%E8%8A%B1%E5%9B%BE-1.jpg");
         mDataList.add("http://osvlwlt4g.bkt.clouddn.com/17-11-10/17291576.jpg");
+        mDataList.add("http://10.51.111.101/webapp/restful/fileUploadController/showPic/59a8c38819da20f9e9bc0a17?picType=0");
 
         RequestOptions requestOptions = new RequestOptions();
         Glide.with(getApplicationContext())
@@ -58,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(getApplicationContext())
                 .setDefaultRequestOptions(requestOptions)
                 .load(mDataList.get(3)).into(mImageView4);
+
+        Glide.with(getApplicationContext())
+                .setDefaultRequestOptions(requestOptions)
+                .load(mDataList.get(4)).into(mImageView5);
+
+
     }
 
     public void onClick() {
@@ -89,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DragUtils.goToDragPhotoView(MainActivity.this, v, mDataList, 3,
+                        new ImageLoaderListener(), new LongClickImageListener(mDataList));
+            }
+        });
+        mImageView5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DragUtils.goToDragPhotoView(MainActivity.this, view, mDataList, 4,
                         new ImageLoaderListener(), new LongClickImageListener(mDataList));
             }
         });

@@ -18,7 +18,7 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
     private Animator.AnimatorListener mFinishListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animation) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            exitFullWhenFinish();
         }
 
         @Override
@@ -58,7 +58,7 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
         photoView.OnPreViewFinishedListener(new DragPhotoView.OnPreViewFinishedListener() {
             @Override
             public void onFinish(DragPhotoView view, float mx, float my, float vw, float vh) {
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                exitFullWhenFinish();
                 mPagerHelper.animationExit(view, mx, my, vw, vh, mFinishListener);
             }
         });

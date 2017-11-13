@@ -39,6 +39,8 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
 
     protected int mPreImageBottomBarPosition;
 
+    protected boolean isExitFullWhenFinish = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -70,6 +72,7 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
     protected void getIntentLogic() {
         mImageList = getIntent().getStringArrayListExtra(DragUtils.IMAGE_STRING_LIST);
         mCurrImagePosition = getIntent().getIntExtra(DragUtils.SHOW_POSITION, 0);
+        isExitFullWhenFinish = getIntent().getBooleanExtra(DragUtils.FINISH_EXIT_FULLSCREEN, true);
         mPreImageBottomBarPosition = mCurrImagePosition;
         mLongClick = (DragOnLongClickListener) getIntent().getSerializableExtra(DragUtils.LONG_CLICK_LISTENER);
         mOnImageLoaderListener = (OnImageLoaderListener) getIntent().getSerializableExtra(DragUtils.IMAGE_LOAD_LISTENER);
@@ -153,7 +156,7 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
     }
 
     private void initBottomBar() {
-        ImageView image ;
+        ImageView image;
         int margin = (int) getResources().getDimension(R.dimen.barImage_distance);
         for (int i = 0; i < mImageList.size(); i++) {
             image = new ImageView(this);
@@ -173,8 +176,14 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
         }
     }
 
+
+    protected void exitFullWhenFinish() {
+        if (isExitFullWhenFinish)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+    }
+
     protected void finishRightNow() {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        exitFullWhenFinish();
         finish();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
