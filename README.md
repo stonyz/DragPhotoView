@@ -6,13 +6,12 @@ forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoVi
 
 目前已经优化部分
 
-* 共享动画效果（后续继续优化）
+* 共享动画效果优化，针对长图、宽图、方形图以及小图与大图不同比例等。
 * 触摸，拖动，长按，滑动复原等问题优化
 * 集成ViewPager模式，支持拖拽与不拖拽，方便直接调用大图查看
 
 ------------------------------------------------------------------
 
-（后面再更新演示图）
 ![](https://github.com/githubwing/DragPhotoView/raw/master/img/img.gif)
 
 ## 二、依赖
@@ -33,6 +32,21 @@ dependencies {
     compile 'com.github.CarGuo:DragPhotoView:1.0.2'
 }
 
+```
+
+## 三、使用
+
+1、DragPhotoView 配合 DragPhotoViewPagerHelper使用
+
+
+2、预览简单调用方法
+
+```
+public static void goToDragPhotoView(final Activity context, View imageView, final List<String> imageList, int currImageIndex,
+                                         OnImageLoaderListener imageLoaderListener, DragOnLongClickListener dragOnLongClickListener)
+
+public static void goToPhotoView(final Activity context, final List<String> imageList, int currImageIndex,
+                                                    OnImageLoaderListener imageLoaderListener, DragOnLongClickListener dragOnLongClickListener)
 ```
 
 # License
