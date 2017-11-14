@@ -164,7 +164,7 @@ public class DragPhotoViewPagerHelper {
                     currentScaleHeight = currentHeight;
                     scaleOffsetEmptyX = 0;
                     scaleOffsetEmptyY = offsetEmpty;
-                } else if (width < height){
+                } else if (width < height) {
                     //此处以竖图充满的前提，计算出实际宽度
                     float currentWidth = mTargetHeight * width / height;
                     if (currentWidth > mTargetWidth) {
@@ -270,6 +270,37 @@ public class DragPhotoViewPagerHelper {
 
         isDragAnimationExit = true;
         final DragPhotoView photoView = photo[position];
+
+        photoView.setEndAlpha();
+        float scaleX = mScaleX;
+        float scaleY = mScaleY;
+
+        if (photoView.getDrawable() != null) {
+            int width = photoView.getDrawable().getBounds().width();
+            int height = photoView.getDrawable().getBounds().height();
+            if (width > 0 && height > 0) {
+                if (width > height) {
+                    //此处以横图充满的前提，计算出实际高度
+                    float currentHeight = mTargetWidth * height / width;
+                    scaleY = mOriginHeight / currentHeight;
+                } else if (width < height) {
+                    //此处以竖图充满的前提，计算出实际宽度
+                    float currentWidth = mTargetHeight * width / height;
+                    if (currentWidth > mTargetWidth) {
+                        //此处以横图充满的前提，计算出实际高度
+                        float currentHeight = mTargetWidth * height / width;
+                        scaleY = mOriginHeight / currentHeight;
+                    } else {
+                        scaleX = mOriginWidth / currentWidth;
+                    }
+                } else {
+                    //如果为方形图片
+                    float currentWidth = mTargetWidth;
+                    scaleY = mOriginWidth / currentWidth;
+                }
+            }
+        }
+
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -290,7 +321,7 @@ public class DragPhotoViewPagerHelper {
         translateYAnimator.setDuration(mAnimationTime);
         translateYAnimator.start();
 
-        ValueAnimator scaleYAnimator = ValueAnimator.ofFloat(1, mScaleY);
+        ValueAnimator scaleYAnimator = ValueAnimator.ofFloat(1, scaleY);
         scaleYAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -300,7 +331,7 @@ public class DragPhotoViewPagerHelper {
         scaleYAnimator.setDuration(mAnimationTime);
         scaleYAnimator.start();
 
-        ValueAnimator scaleXAnimator = ValueAnimator.ofFloat(1, mScaleX);
+        ValueAnimator scaleXAnimator = ValueAnimator.ofFloat(1, scaleX);
         scaleXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
