@@ -58,6 +58,10 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
         photoView.OnPreViewFinishedListener(new DragPhotoView.OnPreViewFinishedListener() {
             @Override
             public void onFinish(DragPhotoView view, float mx, float my, float vw, float vh) {
+                if (position != mCurrImagePosition) {
+                    finishRightNow();
+                    return;
+                }
                 exitFullWhenFinish();
                 mPagerHelper.animationExit(view, mx, my, vw, vh, mFinishListener);
             }
