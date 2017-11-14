@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         mDataList.add("http://www.tumukeji.com/images/upload/imageArticle/1299182493.jpg");
         mDataList.add("http://dasouji.com/wp-content/uploads/2015/07/%E9%95%BF%E8%8A%B1%E5%9B%BE-1.jpg");
         mDataList.add("http://osvlwlt4g.bkt.clouddn.com/17-11-10/17291576.jpg");
-        mDataList.add("http://10.51.111.101/webapp/restful/fileUploadController/showPic/59a8c38819da20f9e9bc0a17?picType=0");
+        mDataList.add("http://osvlwlt4g.bkt.clouddn.com/17-11-14/58156439.jpg");
 
         RequestOptions requestOptions = new RequestOptions();
         Glide.with(getApplicationContext())

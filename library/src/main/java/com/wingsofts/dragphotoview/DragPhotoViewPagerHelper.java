@@ -167,12 +167,23 @@ public class DragPhotoViewPagerHelper {
                 } else if (width < height){
                     //此处以竖图充满的前提，计算出实际宽度
                     float currentWidth = mTargetHeight * width / height;
-                    offsetEmpty = ((mTargetWidth - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
-                    //根据实际宽度，计算出实际的空白缩放偏移
-                    translateX -= offsetEmpty;
-                    currentScaleWidth = currentWidth;
-                    scaleOffsetEmptyX = offsetEmpty;
-                    scaleOffsetEmptyY = 0;
+                    if (currentWidth > mTargetWidth) {
+                        //此处以横图充满的前提，计算出实际高度
+                        float currentHeight = mTargetWidth * height / width;
+                        //根据实际高度，计算出实际的空白缩放偏移
+                        offsetEmpty = ((mTargetHeight - currentHeight) / 2 * Math.max(mScaleX, mScaleY));
+                        translateY -= offsetEmpty;
+                        currentScaleHeight = currentHeight;
+                        scaleOffsetEmptyX = 0;
+                        scaleOffsetEmptyY = offsetEmpty;
+                    } else {
+                        offsetEmpty = ((mTargetWidth - currentWidth) / 2 * Math.max(mScaleX, mScaleY));
+                        //根据实际宽度，计算出实际的空白缩放偏移
+                        translateX -= offsetEmpty;
+                        currentScaleWidth = currentWidth;
+                        scaleOffsetEmptyX = offsetEmpty;
+                        scaleOffsetEmptyY = 0;
+                    }
                 } else {
                     //如果为方形图片
                     float currentWidth = mTargetWidth;
