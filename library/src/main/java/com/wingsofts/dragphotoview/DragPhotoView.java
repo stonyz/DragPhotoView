@@ -311,6 +311,11 @@ public class DragPhotoView extends PhotoView {
         mScaleNormalY = y;
     }
 
+    public void setEndAlpha() {
+        mAlpha = 0;
+        invalidate();
+    }
+
     public void setEmptyOffsetMove(float x, float y) {
         mOffsetEmptyMoveX = x;
         mOffsetEmptyMoveY = y;
