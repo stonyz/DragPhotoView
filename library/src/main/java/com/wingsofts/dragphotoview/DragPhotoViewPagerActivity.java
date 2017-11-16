@@ -103,6 +103,7 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
         if (mPagerHelper.isDragAnimationExit()) {
             return;
         }
+        mPhotoViews[mViewPager.getCurrentItem()].setScale(1, true);
         exitWithAnimation(mViewPager.getCurrentItem());
     }
 
