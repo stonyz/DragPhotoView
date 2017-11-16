@@ -2,6 +2,8 @@
 
 forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView)，进行二次调整与优化
 
+[![](https://jitpack.io/v/CarGuo/DragPhotoView.svg)](https://jitpack.io/#CarGuo/DragPhotoView)
+
 ## 一、介绍
 
 目前已经优化部分
@@ -29,7 +31,7 @@ allprojects {
 
 ```
 dependencies {
-    compile 'com.github.CarGuo:DragPhotoView:v1.0.4'
+    compile 'com.github.CarGuo:DragPhotoView:v1.0.5'
 }
 
 ```
