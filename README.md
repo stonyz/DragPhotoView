@@ -1,16 +1,15 @@
-# DragPhotoView 高仿微信可拖拽返回PhotoView
+## 一、优化后高仿微信的图片预览
 
-forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView)，进行二次调整与优化
-
-[![](https://jitpack.io/v/CarGuo/DragPhotoView.svg)](https://jitpack.io/#CarGuo/DragPhotoView)
-
-## 一、介绍
 
 目前已经优化部分
 
 * 共享动画效果优化，针对长图、宽图、方形图以及小图与大图不同比例等。
 * 触摸，拖动，长按，滑动复原等问题优化
 * 集成ViewPager模式，支持拖拽与不拖拽，方便直接调用大图查看
+* 使用微信的沉浸式主题解决界面全屏与分全屏之间的闪动
+
+[![](https://jitpack.io/v/CarGuo/DragPhotoView.svg)](https://jitpack.io/#CarGuo/DragPhotoView)
+(forked from [githubwing/DragPhotoView](https://github.com/githubwing/DragPhotoView)，进行二次调整与优化)
 
 ------------------------------------------------------------------
 
