@@ -81,7 +81,7 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
     protected void initListener() {
         for (int i = 0; i < mPhotoViews.length; i++) {
             mPhotoViews[i] = (PhotoView) View.inflate(this, getPhotoViewLayoutId(), null);
-            initPhotoViewLogic(mPhotoViews[i], i);
+
         }
         mViewPager.setAdapter(new PagerAdapter() {
             @Override
@@ -92,6 +92,7 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
             @Override
             public Object instantiateItem(ViewGroup container, int position) {
                 container.addView(mPhotoViews[position]);
+                initPhotoViewLogic(mPhotoViews[position], position);
                 mOnImageLoaderListener.load(getApplicationContext(), mPhotoViews[position], mImageList.get(position));
                 return mPhotoViews[position];
             }

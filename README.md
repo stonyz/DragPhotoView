@@ -30,7 +30,7 @@ allprojects {
 
 ```
 dependencies {
-    compile 'com.github.CarGuo:DragPhotoView:v1.0.5'
+    compile 'com.github.CarGuo:DragPhotoView:v1.0.6'
 }
 
 ```
