@@ -129,7 +129,7 @@ public class DragPhotoView extends PhotoView {
                         return super.dispatchTouchEvent(event);
                     }
 
-                    if (mMoveY == 0 && mMoveX != 0) {
+                    if (deltaY < 0 && mMoveX != 0) {
                         if (!isInterceptTouch) {
                             mScale = 1;
                             return super.dispatchTouchEvent(event);
@@ -193,6 +193,7 @@ public class DragPhotoView extends PhotoView {
         float moveX = event.getX();
         mMoveX = moveX - mDownX;
         mMoveY = moveY - mDownY;
+        float tmpMoveY = mMoveY;
         if (mMoveY < 0) {
             mMoveY = 0;
         }
@@ -210,6 +211,9 @@ public class DragPhotoView extends PhotoView {
             mScale = mMinScale;
         } else if (mScale > 1f) {
             mScale = 1;
+        }
+        if (tmpMoveY < 0) {
+            return;
         }
         invalidate();
     }
