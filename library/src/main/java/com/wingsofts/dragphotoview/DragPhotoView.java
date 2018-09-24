@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import uk.co.senab.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * Created by wing on 2016/12/22.
@@ -49,7 +49,9 @@ public class DragPhotoView extends PhotoView {
     }
 
     public interface OnPreViewFinishedListener {
+        void onMoveDown(DragPhotoView view);
         void onFinish(DragPhotoView view, float x, float y, float w, float h);
+        void onNormal(DragPhotoView view);
     }
 
     public DragPhotoView(Context context) {
@@ -156,12 +158,16 @@ public class DragPhotoView extends PhotoView {
                 case MotionEvent.ACTION_UP:
                     if (event.getPointerCount() == 1) {
                         if (mScale < 1) {
-                            if (mMoveY > MAX_MOVE_Y) {
+                            //the MoveY is 80%, then close the preview.
+                            if (mMoveY > MAX_MOVE_Y*0.8) {
                                 if (mFinishedListener != null) {
                                     mFinishedListener.onFinish(this, mMoveX, mMoveY, mWidth, mHeight);
                                 }
                             } else {
                                 doAnimation();
+                                if (mFinishedListener != null) {
+                                    mFinishedListener.onNormal(this);
+                                }
                             }
                         } else {
                             if (!isLongTouch) {
@@ -215,6 +221,10 @@ public class DragPhotoView extends PhotoView {
         if (tmpMoveY < 0) {
             return;
         }
+        if (mFinishedListener != null) {
+            mFinishedListener.onMoveDown(this);
+        }
+
         invalidate();
     }
 

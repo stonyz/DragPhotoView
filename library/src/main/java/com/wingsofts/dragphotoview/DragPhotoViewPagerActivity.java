@@ -6,7 +6,7 @@ import android.view.ViewTreeObserver;
 
 import android.view.WindowManager;
 
-import uk.co.senab.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * ViewPager模式下的可拖拽的预览Activity
@@ -57,6 +57,11 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
         final DragPhotoView photoView = (DragPhotoView) photo;
         photoView.OnPreViewFinishedListener(new DragPhotoView.OnPreViewFinishedListener() {
             @Override
+            public void onMoveDown(DragPhotoView view) {
+
+            }
+
+            @Override
             public void onFinish(DragPhotoView view, float mx, float my, float vw, float vh) {
                 if (position != mCurrImagePosition) {
                     finishRightNow();
@@ -64,6 +69,11 @@ public class DragPhotoViewPagerActivity extends PhotoViewPagerActivity {
                 }
                 exitFullWhenFinish();
                 mPagerHelper.animationExit(view, mx, my, vw, vh, mFinishListener);
+            }
+
+            @Override
+            public void onNormal(DragPhotoView view) {
+
             }
         });
 

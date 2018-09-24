@@ -13,10 +13,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.github.chrisbanes.photoview.OnPhotoTapListener;
+import com.github.chrisbanes.photoview.PhotoView;
 import java.util.List;
 
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * ViewPager模式下的PhotoView
@@ -139,11 +139,12 @@ public class PhotoViewPagerActivity extends AppCompatActivity {
     }
 
     protected void initPhotoViewLogic(PhotoView photo, final int position) {
-        photo.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+        photo.setOnPhotoTapListener(new OnPhotoTapListener() {
             @Override
-            public void onViewTap(View view, float x, float y) {
+            public void onPhotoTap(ImageView view, float x, float y) {
                 finishRightNow();
             }
+
         });
         photo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
